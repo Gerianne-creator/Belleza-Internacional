@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💅 Ecommerce Belleza Internacional - Gerianne Farfán</title>
+  <meta name="description" content="Tienda de belleza — carrito, filtro, pago sandbox (PayPal). Diseño rosado claro y blanco." />
+
+  <style>
+    /* =========================
+       PALETA: rosado claro + blanco
+       ========================= */
+    :root{
+      --bg: #fff7fb;
+      --surface: #ffffff;
+      --muted: #f6dfee;
+      --text: #2b2b2b;
+      --accent: #ff95c5;       /* rosa primario */
+      --accent-600: #ff6fb3;   /* rosa oscuro para botones */
+      --border: #f2cfe0;
+      --danger: #e04b6a;
+      --success: #16a34a;
+      --shadow: 0 6px 18px rgba(215, 145, 170, 0.12);
+      --radius: 12px;
+      --card-radius: 10px;
+      --max-width: 1100px;
+      --gap: 14px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,var(--bg), #fff);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:24px;
+      display:flex;
+      justify-content:center;
+    }
+
+    /* Layout container */
+    .wrap{
+      width:100%;
+      max-width:var(--max-width);
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:28px;
+      align-items:start;
+    }
+
+    header{
+      grid-column: 1 / -1;
+      background: linear-gradient(90deg, rgba(255,149,197,0.12), rgba(255,233,240,0.5));
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+    }
+    header h1{
+      margin:0;
+      font-size:20px;
+      color:var(--accent-600);
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    header p{margin:0;color:#6b6b6b}
+
+    .filtros{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    label[for="categoria"]{font-size:14px;color:#6b6b6b}
+
+    select#categoria{
+      background:var(--surface);
+      border:1px solid var(--border);
+      padding:8px 10px;
+      border-radius:10px;
+      font-size:14px;
+      box-shadow:none;
+      color:var(--text);
+    }
+
+    /* Productos grid */
+    #productos{
+      background:transparent;
+      display:grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap:var(--gap);
+      align-items:start;
+    }
+
+    .producto{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--card-radius);
+      padding:12px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      box-shadow:var(--shadow);
+      transition:transform .12s ease, box-shadow .12s ease;
+    }
+    .producto:hover{ transform: translateY(-4px) }
+
+    .producto img{
+      width:100%;
+      height:220px;
+      object-fit:cover;
+      border-radius:8px;
+      background:#fff;
+    }
+    .producto h3{margin:0;font-size:16px;color:var(--text)}
+    .producto p.precio{margin:0;font-weight:600;color:var(--accent-600)}
+
+    .producto .meta{font-size:13px;color:#7a7a7a}
+
+    .producto .actions{
+      margin-top:auto;
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .button{
+      background:var(--accent-600);
+      color:white;
+      border:none;
+      padding:10px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
+      flex:1;
+    }
+    .button.ghost{
+      background:transparent;
+      color:var(--accent-600);
+      border:1px solid var(--border);
+      padding:8px 10px;
+    }
+
+    /* Carrito (right column) */
+    .carrito{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      padding:16px;
+      position:sticky;
+      top:24px;
+      height:fit-content;
+      box-shadow:var(--shadow);
+    }
+    .carrito h2{margin:0 0 8px 0;color:var(--accent-600);display:flex;align-items:center;gap:8px}
+    .carrito p.small{margin:6px 0;color:#6b6b6b;font-size:14px}
+
+    #lista-carrito{list-style:none;padding:0;margin:12px 0 0;display:flex;flex-direction:column;gap:10px}
+    #lista-carrito li{
+      background:linear-gradient(180deg,#fff,#fff);
+      border:1px solid var(--border);
+      padding:10px;
+      border-radius:8px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      font-size:14px;
+    }
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty button{
+      border:1px solid var(--border);
+      background:transparent;
+      padding:6px 8px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .remove{
+      background:var(--danger);
+      color:white;
+      border:none;
+      padding:6px 8px;
+      border-radius:8px;
+      cursor:pointer;
+    }
+
+    .totales{margin-top:12px;border-top:1px dashed var(--border);padding-top:12px;font-size:14px}
+    .totales .total{font-size:18px;font-weight:700;color:var(--text);margin-top:8px}
+    .acciones{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+    .vaciar{background:transparent;border:1px solid var(--border);padding:10px;border-radius:10px;cursor:pointer}
+    .finalizar{background:var(--accent-600);color:white;border:none;padding:10px;border-radius:10px;cursor:pointer}
+
+    .pago{margin-top:12px;background:linear-gradient(180deg,#fff,#fff);border-radius:8px;padding:12px;border:1px solid var(--border)}
+    .hint{font-size:13px;color:#6b6b6b;margin-top:8px}
+
+    /* small screens */
+    @media (max-width:980px){
+      .wrap{grid-template-columns:1fr; padding-bottom:40px}
+      header{flex-direction:column;align-items:flex-start;gap:12px}
+      .carrito{position:relative;top:0}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap" role="main">
+
+    <header role="banner" aria-label="Encabezado de la tienda">
+      <div>
+        <h1>💅 Ecommerce Belleza Internacional - Gerianne Farfán</h1>
+        <p>Productos seleccionados para resaltar tu belleza — Estilo rosado claro</p>
+      </div>
+
+      <div class="filtros" role="region" aria-label="Filtros de productos">
+        <label for="categoria">Filtrar:</label>
+        <select id="categoria" name="categoria" aria-label="Seleccionar categoría">
+          <option value="todos">Todos</option>
+          <option value="Maquillaje">Maquillaje</option>
+          <option value="Uñas">Uñas</option>
+          <option value="Accesorios">Accesorios</option>
+        </select>
+      </div>
+    </header>
+
+    <!-- Productos -->
+    <section id="productos" aria-live="polite" aria-busy="false" aria-label="Listado de productos">
+      <!-- Renderizado por JS -->
+    </section>
+
+    <!-- Carrito -->
+    <aside class="carrito" aria-label="Carrito de compras">
+      <h2>🛒 Carrito</h2>
+      <p class="small">Productos en carrito: <strong><span id="cantidad-carrito">0</span></strong></p>
+
+      <ul id="lista-carrito" aria-live="polite" aria-relevant="additions removals"></ul>
+
+      <div class="totales" aria-label="Totales del carrito">
+        <p>Subtotal: <strong id="subtotal-text">$0.00</strong></p>
+        <p>Descuento: <strong id="descuento-text">$0.00</strong></p>
+        <p>Impuestos: <strong id="impuestos-text">$0.00</strong></p>
+        <p class="total">Total: <strong id="total-text">$0.00</strong></p>
+      </div>
+
+      <div class="acciones">
+        <button id="btn-vaciar" class="vaciar" type="button">🧼 Vaciar</button>
+        <button id="btn-finalizar" class="finalizar" type="button">✅ Finalizar compra</button>
+      </div>
+
+      <div class="pago" aria-label="Pago">
+        <h3 style="margin:0 0 8px 0">💳 Método de pago</h3>
+        <div id="paypal-button-container" style="display:none"></div>
+        <p class="hint">Para pruebas: PayPal sandbox. Client ID de ejemplo: <code>sb</code>.</p>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- PayPal SDK (sandbox). Cambia client-id=sb por tu client id -->
+  <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=USD&components=buttons,funding-eligibility"></script>
+
+  <script>
+    /***************
+     CONFIGURACIÓN
+    ***************/
+    const MONEDA = 'USD';           // 'USD' o 'COP' (si quieres COP, cambia aquí)
+    const LOCALE = 'es-CO';         // formato local (puedes cambiar)
+    const TAX_RATE = 0.00;          // por ejemplo 0.19 para 19%
+    const DESCUENTO_GLOBAL = 0.00;  // descuento fijo (ej: cupón) en misma moneda
+
+    const LS_KEYS = {
+      carrito: 'mi_tienda_carrito_v1',
+      filtro:  'mi_tienda_filtro_v1'
+    };
+
+    /**********************
+     DATASET: tus productos
+     - Mantengo exactamente las urls/imagenes que pegaste
+     - Cada producto tiene: id, nombre, precio (Number), categoria, img
+    **********************/
+    const productos = [
+      {
+        id: 1,
+        nombre: "Brochas de maquillaje",
+        precio: 25.00,
+        categoria: "Maquillaje",
+        img: "https://ouinovias.com/wp-content/uploads/ouinovias-pinceles-maquillaje5.jpg",
+        alt: "Brochas de maquillaje"
+      },
+      {
+        id: 2,
+        nombre: "Rubor en polvo con glitter",
+        precio: 18.00,
+        categoria: "Maquillaje",
+        img: "https://tucatalogodemaquillaje.com/wp-content/uploads/2024/08/cw187_Rubor-Luminoso-Bloomshell-1.jpg",
+        alt: "Rubor en polvo con glitter"
+      },
+      {
+        id: 3,
+        nombre: "Esmaltes",
+        precio: 30.00,
+        categoria: "Uñas",
+        img: "https://fielatubelleza.com/wp-content/uploads/2024/05/EmptyName-5.jpg",
+        alt: "Esmaltes"
+      },
+      {
+        id: 4,
+        nombre: "Labiales matte",
+        precio: 18.00,
+        categoria: "Maquillaje",
+        img: "https://images-cdn.ubuy.co.in/633b56634c69fc6d8e2b5aa1-6pcs-matte-liquid-lipstick-makeup-set.jpg",
+        alt: "Labiales matte"
+      },
+      {
+        id: 5,
+        nombre: "Paleta de sombras matte",
+        precio: 22.00,
+        categoria: "Maquillaje",
+        img: "https://www.anyeluz.com/cdn/shop/files/PaletadesombrasMatteabierta.jpg?v=1717729612&width=1080",
+        alt: "Paleta de sombras matte"
+      }
+    ];
+
+    /**********************
+     ESTADO y SELECTORES
+    **********************/
+    const cart = new Map(); // carrito basado en Map()
+
+    const el = {
+      productos: document.getElementById('productos'),
+      lista: document.getElementById('lista-carrito'),
+      subtotal: document.getElementById('subtotal-text'),
+      impuestos: document.getElementById('impuestos-text'),
+      descuento: document.getElementById('descuento-text'),
+      total: document.getElementById('total-text'),
+      cantidad: document.getElementById('cantidad-carrito'),
+      select: document.getElementById('categoria'),
+      btnVaciar: document.getElementById('btn-vaciar'),
+      btnFinal: document.getElementById('btn-finalizar'),
+      paypal: document.getElementById('paypal-button-container')
+    };
+
+    const money = new Intl.NumberFormat(LOCALE, { style: 'currency', currency: MONEDA });
+
+    /**********************
+     RENDER: Productos
+    **********************/
+    function renderProductos(list){
+      el.productos.setAttribute('aria-busy','true');
+      el.productos.innerHTML = '';
+
+      if (!Array.isArray(list) || list.length === 0){
+        el.productos.innerHTML = `<div style="padding:20px;border:1px dashed #f2cfe0;border-radius:12px;background:#fff"><strong>No hay productos</strong><div class="hint">Agrega items al array <code>productos</code> en el script.</div></div>`;
+        el.productos.setAttribute('aria-busy','false');
+        return;
+      }
+
+      list.forEach(p => {
+        const art = document.createElement('article');
+        art.className = 'producto';
+        art.innerHTML = `
+          <img src="${p.img}" alt="${escapeHtml(p.alt || p.nombre)}" loading="lazy" />
+          <div>
+            <h3>${escapeHtml(p.nombre)}</h3>
+            <p class="meta">${escapeHtml(p.categoria)}</p>
+            <p class="precio">${money.format(Number(p.precio || 0))}</p>
+          </div>
+          <div class="actions">
+            <button class="button" data-add="${p.id}" aria-label="Agregar ${escapeHtml(p.nombre)} al carrito">Agregar</button>
+            <button class="button ghost" data-view="${p.id}" aria-label="Ver ${escapeHtml(p.nombre)}">Ver</button>
+          </div>
+        `;
+
+        // fallback imagen si carga mal
+        const img = art.querySelector('img');
+        img.addEventListener('error', () => {
+          img.src = 'https://via.placeholder.com/400x600?text=Imagen+no+disponible';
+          img.alt = p.nombre + ' (imagen no disponible)';
+        });
+
+        el.productos.appendChild(art);
+      });
+
+      el.productos.setAttribute('aria-busy','false');
+    }
+
+    /**********************
+     FILTRO
+    **********************/
+    function aplicarFiltro(){
+      const sel = el.select.value;
+      const data = sel === 'todos' ? productos : productos.filter(x => String(x.categoria) === sel);
+      renderProductos(data);
+      localStorage.setItem(LS_KEYS.filtro, sel);
+    }
+    function cargarFiltro(){
+      const f = localStorage.getItem(LS_KEYS.filtro);
+      if (f) el.select.value = f;
+    }
+
+    /**********************
+     PERSISTENCIA carrito
+    **********************/
+    function persistCart(){
+      // Guardamos como array de pares para mantener serializable
+      const arr = Array.from(cart.entries());
+      localStorage.setItem(LS_KEYS.carrito, JSON.stringify(arr));
+    }
+    function loadCart(){
+      const raw = localStorage.getItem(LS_KEYS.carrito);
+      if (!raw) return;
+      try{
+        const arr = JSON.parse(raw);
+        // cada item es [id, objeto]
+        arr.forEach(([id, item]) => cart.set(Number(id), item));
+      }catch(e){
+        console.warn('Error cargando carrito desde localStorage', e);
+      }
+    }
+
+    /**********************
+     TOTALES (cálculos cuidadosos)
+     - subtotal = suma (precio * cantidad)
+     - descuento = min(DESCUENTO_GLOBAL, subtotal)
+     - impuestos = (subtotal - descuento) * TAX_RATE
+     - total = subtotal - descuento + impuestos
+     **********************/
+    function calcularTotales(){
+      // calcular subtotal sumando producto por producto
+      let subtotal = 0;
+      let cantidadTotal = 0;
+      for (const item of cart.values()){
+        // Multiplicación paso a paso (evita flotar inesperado)
+        const precio = Number(item.precio) || 0;
+        const qty = Number(item.cantidad) || 0;
+        const line = precio * qty;
+        subtotal += line;
+        cantidadTotal += qty;
+      }
+
+      const descuento = Math.min(DESCUENTO_GLOBAL, subtotal);
+      const base = subtotal - descuento;
+      const impuestos = Math.round((base * TAX_RATE) * 100) / 100; // 2 decimales
+      const total = Math.round((base + impuestos) * 100) / 100;
+
+      return {
+        subtotal,
+        descuento,
+        impuestos,
+        total,
+        cantidad: cantidadTotal
+      };
+    }
+
+    /**********************
+     RENDER carrito
+    **********************/
+    let lastRenderedPayPalTotal = null;
+    function pintarCarrito(){
+      el.lista.innerHTML = '';
+
+      if (cart.size === 0){
+        el.lista.innerHTML = `<li style="text-align:center;color:#7a7a7a">El carrito está vacío</li>`;
+      } else {
+        for (const [id, it] of cart.entries()){
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <span>${escapeHtml(it.nombre)} — ${money.format(Number(it.precio))}</span>
+            <div class="qty" role="group" aria-label="Controles de cantidad ${escapeHtml(it.nombre)}">
+              <button data-dec="${id}" aria-label="Disminuir ${escapeHtml(it.nombre)}">−</button>
+              <span aria-live="polite">${it.cantidad}</span>
+              <button data-inc="${id}" aria-label="Aumentar ${escapeHtml(it.nombre)}">+</button>
+              <button class="remove" data-del="${id}" aria-label="Eliminar ${escapeHtml(it.nombre)}">Eliminar</button>
+            </div>
+          `;
+          el.lista.appendChild(li);
+        }
+      }
+
+      const t = calcularTotales();
+      el.subtotal.textContent  = money.format(t.subtotal);
+      el.descuento.textContent = money.format(t.descuento);
+      el.impuestos.textContent = money.format(t.impuestos);
+      el.total.textContent     = money.format(t.total);
+      el.cantidad.textContent  = t.cantidad;
+
+      // PayPal visible sólo cuando total > 0
+      if (t.total > 0){
+        el.paypal.style.display = 'block';
+      } else {
+        el.paypal.style.display = 'none';
+      }
+
+      // (re)render PayPal botón si es necesario
+      renderPayPalButton(t.total);
+    }
+
+    /**********************
+     OPERACIONES sobre carrito
+    **********************/
+    function addToCart(id, qty = 1){
+      const p = productos.find(x => x.id === Number(id));
+      if (!p) { alert('Producto no encontrado'); return; }
+      const item = cart.get(Number(id));
+      if (item){
+        item.cantidad = Number(item.cantidad) + Number(qty);
+      } else {
+        cart.set(Number(id), { id: p.id, nombre: p.nombre, precio: Number(p.precio), cantidad: Number(qty) });
+      }
+      persistCart();
+      pintarCarrito();
+    }
+    function inc(id){
+      const it = cart.get(Number(id));
+      if (!it) return;
+      it.cantidad = Number(it.cantidad) + 1;
+      persistCart();
+      pintarCarrito();
+    }
+    function dec(id){
+      const it = cart.get(Number(id));
+      if (!it) return;
+      it.cantidad = Number(it.cantidad) - 1;
+      if (it.cantidad <= 0) cart.delete(Number(id));
+      persistCart();
+      pintarCarrito();
+    }
+    function delItem(id){
+      cart.delete(Number(id));
+      persistCart();
+      pintarCarrito();
+    }
+    function vaciarCarritoConfirm(){
+      if (confirm('¿Estás seguro de vaciar el carrito?')){
+        cart.clear();
+        persistCart();
+        pintarCarrito();
+      }
+    }
+
+    /**********************
+     FINALIZAR (simulado)
+    **********************/
+    function finalizarCompra(){
+      const t = calcularTotales();
+      if (t.total <= 0){
+        alert('El carrito está vacío.');
+        return;
+      }
+      // Aquí se podría integrar lógica real de checkout
+      alert('Pedido confirmado (simulación). Gracias por tu compra 💖');
+      cart.clear();
+      persistCart();
+      pintarCarrito();
+    }
+
+    /**********************
+     PAYPAL: render condicional (sandbox)
+    **********************/
+    function renderPayPalButton(total){
+      // si PayPal no está cargado aún, simplemente regresamos
+      if (typeof paypal === 'undefined') return;
+
+      // si total <= 0 limpiamos
+      if (!total || Number(total) <= 0){
+        lastRenderedPayPalTotal = null;
+        el.paypal.innerHTML = '';
+        return;
+      }
+
+      // no re-render si ya renderizamos para el mismo total
+      if (lastRenderedPayPalTotal === total && el.paypal.childElementCount > 0) return;
+
+      lastRenderedPayPalTotal = total;
+      el.paypal.innerHTML = ''; // limpiar
+
+      // create buttons
+      paypal.Buttons({
+        style: { layout: 'vertical', color: 'gold', shape: 'rect', label: 'pay' },
+        createOrder: function(data, actions){
+          // PayPal espera string con 2 decimales
+          return actions.order.create({
+            purchase_units: [{
+              amount: { value: Number(total).toFixed(2), currency_code: MONEDA }
+            }]
+          });
+        },
+        onApprove: function(data, actions){
+          return actions.order.capture().then(function(details){
+            const name = details?.payer?.name?.given_name || 'cliente';
+            alert(`¡Gracias ${name}! Pago completado (sandbox).`);
+            cart.clear();
+            persistCart();
+            pintarCarrito();
+          });
+        },
+        onError: function(err){
+          console.error('PayPal error', err);
+          alert('Ocurrió un error con el pago (ver consola).');
+        }
+      }).render('#paypal-button-container');
+    }
+
+    /**********************
+     EVENTOS: delegación (sin onclick)
+    **********************/
+    document.addEventListener('click', function(e){
+      const addBtn = e.target.closest('[data-add]');
+      if (addBtn) {
+        const id = addBtn.getAttribute('data-add');
+        addToCart(Number(id), 1);
+        return;
+      }
+
+      const viewBtn = e.target.closest('[data-view]');
+      if (viewBtn){
+        const id = viewBtn.getAttribute('data-view');
+        const p = productos.find(x => String(x.id) === String(id));
+        if (p) alert(`${p.nombre}\nPrecio: ${money.format(p.precio)}\nCategoría: ${p.categoria}`);
+        return;
+      }
+
+      const incBtn = e.target.closest('[data-inc]');
+      if (incBtn){
+        inc(Number(incBtn.getAttribute('data-inc')));
+        return;
+      }
+      const decBtn = e.target.closest('[data-dec]');
+      if (decBtn){
+        dec(Number(decBtn.getAttribute('data-dec')));
+        return;
+      }
+      const delBtn = e.target.closest('[data-del]');
+      if (delBtn){
+        delItem(Number(delBtn.getAttribute('data-del')));
+        return;
+      }
+    });
+
+    // controles del DOM
+    el.select.addEventListener('change', aplicarFiltro);
+    el.btnVaciar.addEventListener('click', vaciarCarritoConfirm);
+    el.btnFinal.addEventListener('click', finalizarCompra);
+
+    /**********************
+     UTIL: escapar texto para inyección mínima
+    **********************/
+    function escapeHtml(str){
+      if (!str && str !== 0) return '';
+      return String(str)
+        .replaceAll('&','&amp;')
+        .replaceAll('<','&lt;')
+        .replaceAll('>','&gt;')
+        .replaceAll('"','&quot;')
+        .replaceAll("'",'&#039;');
+    }
+
+    /**********************
+     INIT
+    **********************/
+    (function init(){
+      // cargar filtro guardado
+      cargarFiltro();
+      // render inicial según filtro
+      aplicarFiltro();
+      // cargar carrito desde localStorage
+      loadCart();
+      pintarCarrito();
+      // focus para accesibilidad
+      document.querySelector('main')?.focus?.();
+    })();
+
+    // expone funciones para consola si se necesita debug
+    window._STORE = {
+      productos, cart, addToCart, pintarCarrito, calcularTotales
+    };
+  </script>
+</body>
+</html>
